@@ -1,0 +1,31 @@
+{
+  "bio": [
+    {
+      "question": "What is the powerhouse of the cell?",
+      "answer": "Mitochondria",
+      "upvotes": 1,
+      "downvotes": 1
+    },
+    {
+      "question": "a",
+      "answer": "a",
+      "upvotes": 0,
+      "downvotes": 0
+    },
+    {
+      "question": "hi",
+      "answer": "hi",
+      "upvotes": 0,
+      "downvotes": 0
+    },
+    {
+      "question": "hi",
+      "answer": "hi2",
+      "upvotes": 0,
+      "downvotes": 0
+    }
+  ],
+  "chem": [],
+  "phys": [],
+  "mcat": []
+}

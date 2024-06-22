@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Question</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Add Question</h1>
+        <form id="question-form">
+            <div class="form-group">
+                <label for="question">Question</label>
+                <textarea id="question" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="answer">Answer</label>
+                <textarea id="answer" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <h2 class="my-4">Or Add Questions in CSV Format</h2>
+        <p>Example CSV syntax:</p>
+        <pre>Question,Answer</pre>
+        <pre>"What is the powerhouse of the cell?&lt;br&gt;&lt;img src='images/mitochondria.png' alt='Mitochondria'&gt;","Mitochondria"</pre>
+        <form id="csv-form">
+            <div class="form-group">
+                <label for="csv-input">CSV Input</label>
+                <textarea id="csv-input" class="form-control" rows="5" placeholder="Enter CSV data here"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit CSV</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('question-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            const examId = urlParams.get('id');
+            const question = {
+                question: document.getElementById('question').value,
+                answer: document.getElementById('answer').value,
+                upvotes: 0,
+                downvotes: 0
+            };
+            saveQuestion(examId, question).then(() => {
+                alert('Question added successfully');
+                window.location.href = `exam.html?id=${examId}`;
+            });
+        });
+
+        document.getElementById('csv-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            const examId = urlParams.get('id');
+            const csvInput = document.getElementById('csv-input').value;
+            const lines = csvInput.split('\n');
+            const questions = lines.map(line => {
+                const [question, answer] = line.split(',').map(item => item.trim().replace(/^"|"$/g, ''));
+                return { question, answer, upvotes: 0, downvotes: 0 };
+            });
+            questions.forEach(question => {
+                saveQuestion(examId, question);
+            });
+            alert('CSV Questions added successfully');
+            window.location.href = `exam.html?id=${examId}`;
+        });
+    </script>
+    <script src="js/utils.js"></script>
+</body>
+</html>

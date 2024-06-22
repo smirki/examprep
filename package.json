@@ -1,0 +1,13 @@
+{
+    "name": "mcat-test-prep",
+    "version": "1.0.0",
+    "description": "MCAT Test Prep website with Node.js backend",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1"
+    }
+  }
+  
