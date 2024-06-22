@@ -65,6 +65,7 @@ app.post('/api/questions/:examId', async (req, res) => {
     const examId = req.params.examId;
     const newQuestion = req.body;
     newQuestion.examId = examId;
+    newQuestion.attempts = 0;
     try {
         await db.collection('questions').add(newQuestion);
         res.status(201).send('Question added successfully.');
@@ -124,11 +125,42 @@ app.get('/api/profile/:userId', async (req, res) => {
 app.post('/api/session', async (req, res) => {
     const { userId, session } = req.body;
     try {
-        await db.collection('users').doc(userId).collection('sessions').add(session);
+        const sessionRef = await db.collection('users').doc(userId).collection('sessions').add(session);
+        const questions = session.questions || [];
+        for (const question of questions) {
+            const questionRef = db.collection('questions').doc(question.id);
+            await questionRef.update({ attempts: admin.firestore.FieldValue.increment(1) });
+        }
         res.status(201).send('Session data saved successfully.');
     } catch (error) {
         console.error('Error saving session data:', error);
         res.status(500).send('Error saving session data.');
+    }
+});
+
+// Update user question statistics
+app.post('/api/questionAttempt', async (req, res) => {
+    const { userId, questionId, isCorrect } = req.body;
+    try {
+        const userQuestionRef = db.collection('users').doc(userId).collection('questionStats').doc(questionId);
+        const userQuestionDoc = await userQuestionRef.get();
+        if (userQuestionDoc.exists) {
+            await userQuestionRef.update({
+                attempts: admin.firestore.FieldValue.increment(1),
+                correct: isCorrect ? admin.firestore.FieldValue.increment(1) : admin.firestore.FieldValue.increment(0),
+                incorrect: isCorrect ? admin.firestore.FieldValue.increment(0) : admin.firestore.FieldValue.increment(1)
+            });
+        } else {
+            await userQuestionRef.set({
+                attempts: 1,
+                correct: isCorrect ? 1 : 0,
+                incorrect: isCorrect ? 0 : 1
+            });
+        }
+        res.status(200).send('User question stats updated successfully.');
+    } catch (error) {
+        console.error('Error updating user question stats:', error);
+        res.status(500).send('Error updating user question stats.');
     }
 });
 
@@ -163,5 +195,3 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-

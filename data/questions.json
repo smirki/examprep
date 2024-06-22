@@ -31,7 +31,8 @@
     {
       "question": "What is the primary function of the mitochondria?",
       "answer": "To produce ATP through cellular respiration.",
-      "upvotes": null
+      "upvotes": null,
+      "downvotes": null
     },
     {
       "question": "What is the basic structural unit of proteins?",
@@ -228,4 +229,3 @@
     }
   ]
 }
-

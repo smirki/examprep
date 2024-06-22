@@ -1,6 +1,6 @@
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, setDoc, collection, addDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, collection, addDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseConfig.js";
 
 const app = initializeApp(firebaseConfig);
@@ -20,13 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             sessionStartTime = new Date();
-            const sessionRef = await addDoc(collection(db, 'sessions'), {
-                userId: user.uid,
+            const sessionRef = await addDoc(collection(db, 'users', user.uid, 'sessions'), {
                 examId,
                 startTime: sessionStartTime,
                 endTime: null,
                 correctAnswers: 0,
-                totalQuestions: 0
+                totalQuestions: 0,
+                questions: []
             });
             sessionId = sessionRef.id;
         } else {
@@ -35,58 +35,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('end-exam').addEventListener('click', async () => {
-        const sessionEndTime = new Date();
-        await updateDoc(doc(db, 'sessions', sessionId), {
-            endTime: sessionEndTime
-        });
-        const sessionData = {
-            userId: auth.currentUser.uid,
-            session: {
-                examId,
-                startTime: sessionStartTime,
-                endTime: sessionEndTime,
-                correctAnswers,
-                totalQuestions
-            }
-        };
-        await fetch('/api/session', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(sessionData)
-        });
+        await endSession();
         window.location.href = 'index.html';
     });
 
     window.addEventListener('beforeunload', async (event) => {
         event.preventDefault();
+        await endSession();
+    });
+
+    async function endSession() {
         if (sessionId) {
             const sessionEndTime = new Date();
-            await updateDoc(doc(db, 'sessions', sessionId), {
+            await updateDoc(doc(db, 'users', auth.currentUser.uid, 'sessions', sessionId), {
                 endTime: sessionEndTime
             });
-            const sessionData = {
-                userId: auth.currentUser.uid,
-                session: {
-                    examId,
-                    startTime: sessionStartTime,
-                    endTime: sessionEndTime,
-                    correctAnswers,
-                    totalQuestions
-                }
-            };
-            await fetch('/api/session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(sessionData)
-            });
         }
-    });
-    
-    
+    }
 
     loadQuestions(examId).then(questions => {
         let currentQuestionIndex = 0;
@@ -96,11 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentQuestionIndex < questions.length) {
                 const question = questions[currentQuestionIndex];
                 const questionContainer = document.getElementById('question-container');
+                const userStats = await getUserQuestionStats(auth.currentUser.uid, question.id);
+        
                 questionContainer.innerHTML = `
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Question ${currentQuestionIndex + 1}</h5>
                             <p class="card-text">${question.question}</p>
+                            <p class="card-text">${userStats.attempts > 0 ? `${userStats.correct}/${userStats.attempts} attempts succeeded` : 'You have not attempted this question'}</p>
                             <input type="text" id="user-answer" class="form-control" placeholder="Your answer">
                             <button class="btn btn-primary mt-3" id="submit-answer">Submit</button>
                             <button class="btn btn-secondary mt-3" id="ask-again-later">Ask Again Later</button>
@@ -121,25 +89,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `;
-
+        
                 const userAnswerInput = document.getElementById('user-answer');
                 userAnswerInput.addEventListener('keydown', (event) => {
                     if (event.key === 'Enter') {
                         submitAnswer();
                     }
                 });
-
+        
                 document.getElementById('submit-answer').addEventListener('click', submitAnswer);
-
+        
                 async function submitAnswer() {
                     const userAnswer = document.getElementById('user-answer').value;
                     const feedbackContainer = document.getElementById('feedback-container');
                     const feedbackMessage = document.getElementById('feedback-message');
                     const correctAnswerDisplay = document.getElementById('correct-answer');
-
+        
                     totalQuestions++;
-
-                    if (evaluateAnswer(userAnswer, question.answer)) {
+        
+                    const isCorrect = evaluateAnswer(userAnswer, question.answer);
+                    if (isCorrect) {
                         feedbackMessage.textContent = 'Correct!';
                         feedbackMessage.classList.remove('text-danger');
                         feedbackMessage.classList.add('text-success');
@@ -152,16 +121,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         correctAnswerDisplay.textContent = `The correct answer is: ${question.answer}`;
                         askAgainQuestions.push(question);
                     }
-
-                    await updateDoc(doc(db, 'sessions', sessionId), {
+        
+                    await updateUserQuestionStats(auth.currentUser.uid, question.id, isCorrect);
+        
+                    await updateDoc(doc(db, 'users', auth.currentUser.uid, 'sessions', sessionId), {
                         correctAnswers,
                         totalQuestions,
-                        [`questions.${currentQuestionIndex}`]: {
+                        questions: arrayUnion({
                             question: question.question,
-                            correct: evaluateAnswer(userAnswer, question.answer)
-                        }
+                            userAnswer,
+                            correct: isCorrect
+                        })
                     });
-
+        
+                    await updateDoc(doc(db, 'questions', question.id), {
+                        attempts: increment(1)
+                    });
+        
                     feedbackContainer.style.display = 'block';
                     currentQuestionIndex++;
                     setTimeout(() => {
@@ -169,13 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         showQuestion();
                     }, 2000);
                 }
-
+        
                 document.getElementById('ask-again-later').addEventListener('click', () => {
                     askAgainQuestions.push(question);
                     currentQuestionIndex++;
                     showQuestion();
                 });
-
+        
                 document.getElementById('upvote').addEventListener('click', async () => {
                     if (!userUpvotes.has(question.question)) {
                         question.upvotes = (question.upvotes || 0) + 1;
@@ -188,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert('You can only upvote once.');
                     }
                 });
-
+        
                 document.getElementById('downvote').addEventListener('click', async () => {
                     question.downvotes = (question.downvotes || 0) + 1;
                     await updateDoc(doc(db, 'questions', question.id), {
@@ -196,11 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     showQuestion();
                 });
-
+        
                 document.getElementById('report').addEventListener('click', () => {
                     document.getElementById('report-reason-container').style.display = 'block';
                 });
-
+        
                 document.getElementById('submit-report-reason').addEventListener('click', async () => {
                     const reason = document.getElementById('report-reason').value;
                     if (reason) {
@@ -224,14 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3>All questions completed!</h3>
                     <a href="index.html" class="btn btn-primary">Back to Main Menu</a>
                 `;
-
-                const sessionEndTime = new Date();
-                await updateDoc(doc(db, 'sessions', sessionId), {
-                    endTime: sessionEndTime
-                });
+        
+                await endSession();
             }
         }
         showQuestion();
+        
     });
 });
 
@@ -246,11 +220,38 @@ async function loadQuestions(examId) {
     return questions;
 }
 
+async function getUserQuestionStats(userId, questionId) {
+    const userQuestionStatsRef = doc(db, 'users', userId, 'questionStats', questionId);
+    const userQuestionStatsDoc = await getDoc(userQuestionStatsRef);
+    if (userQuestionStatsDoc.exists()) {
+        return userQuestionStatsDoc.data();
+    } else {
+        return { attempts: 0, correct: 0, incorrect: 0 };
+    }
+}
+
+async function updateUserQuestionStats(userId, questionId, isCorrect) {
+    const userQuestionStatsRef = doc(db, 'users', userId, 'questionStats', questionId);
+    const userQuestionStatsDoc = await getDoc(userQuestionStatsRef);
+    if (userQuestionStatsDoc.exists()) {
+        const stats = userQuestionStatsDoc.data();
+        await updateDoc(userQuestionStatsRef, {
+            attempts: increment(1),
+            correct: isCorrect ? increment(1) : stats.correct,
+            incorrect: isCorrect ? stats.incorrect : increment(1)
+        });
+    } else {
+        await setDoc(userQuestionStatsRef, {
+            attempts: 1,
+            correct: isCorrect ? 1 : 0,
+            incorrect: isCorrect ? 0 : 1
+        });
+    }
+}
+
 function evaluateAnswer(userAnswer, correctAnswer) {
     const userWords = userAnswer.toLowerCase().split(' ');
     const correctWords = correctAnswer.toLowerCase().split(' ');
     const commonWords = userWords.filter(word => correctWords.includes(word));
     return (commonWords.length / correctWords.length) >= 0.5;
 }
-
-

@@ -100,5 +100,3 @@ function renderChart(sessionData) {
         }
     });
 }
-
-

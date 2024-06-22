@@ -35,6 +35,6 @@ if __name__ == "__main__":
     skip_directories = [os.path.join(start_directory, 'node_modules'), os.path.join(start_directory, '.git')]
 
     # List of files to skip
-    skip_files = ['output.txt']
+    skip_files = ['output.txt', 'package.json', 'package-lock.json']
 
     collect_contents(start_directory, output_file, skip_directories, skip_files)
