@@ -10,3 +10,5 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `practice.html?id=${examId}`;
     });
 });
+
+

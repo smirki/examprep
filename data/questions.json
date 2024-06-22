@@ -3,7 +3,7 @@
     {
       "question": "What is the powerhouse of the cell?",
       "answer": "Mitochondria",
-      "upvotes": 1,
+      "upvotes": 3,
       "downvotes": 1
     },
     {
@@ -27,5 +27,205 @@
   ],
   "chem": [],
   "phys": [],
-  "mcat": []
+  "mcat": [
+    {
+      "question": "What is the primary function of the mitochondria?",
+      "answer": "To produce ATP through cellular respiration.",
+      "upvotes": null
+    },
+    {
+      "question": "What is the basic structural unit of proteins?",
+      "answer": "Amino acids."
+    },
+    {
+      "question": "What is the main component of the cell membrane?",
+      "answer": "Phospholipids."
+    },
+    {
+      "question": "What is the powerhouse of the cell?",
+      "answer": "Mitochondria."
+    },
+    {
+      "question": "What is the main function of red blood cells?",
+      "answer": "To transport oxygen."
+    },
+    {
+      "question": "What is the chemical formula for glucose?",
+      "answer": "C6H12O6."
+    },
+    {
+      "question": "What is the main function of the liver?",
+      "answer": "To detoxify chemicals and metabolize drugs."
+    },
+    {
+      "question": "What is the primary structure of DNA?",
+      "answer": "A double helix.",
+      "upvotes": null
+    },
+    {
+      "question": "What is the function of ribosomes?",
+      "answer": "To synthesize proteins."
+    },
+    {
+      "question": "What is the basic unit of heredity?",
+      "answer": "Gene."
+    },
+    {
+      "question": "What is the main function of white blood cells?",
+      "answer": "To fight infections."
+    },
+    {
+      "question": "What is the main purpose of the cardiovascular system?",
+      "answer": "To circulate blood throughout the body."
+    },
+    {
+      "question": "What is the definition of osmosis?",
+      "answer": "The movement of water across a semipermeable membrane from a region of lower solute concentration to a region of higher solute concentration."
+    },
+    {
+      "question": "What is the role of enzymes in biological reactions?",
+      "answer": "To act as catalysts and speed up reactions."
+    },
+    {
+      "question": "What is the main function of the respiratory system?",
+      "answer": "To exchange gases (oxygen and carbon dioxide)."
+    },
+    {
+      "question": "What is the primary structure of proteins?",
+      "answer": "A sequence of amino acids."
+    },
+    {
+      "question": "What is the chemical symbol for sodium?",
+      "answer": "Na."
+    },
+    {
+      "question": "What is the function of hemoglobin?",
+      "answer": "To carry oxygen in the blood."
+    },
+    {
+      "question": "What is the main function of the digestive system?",
+      "answer": "To break down food and absorb nutrients."
+    },
+    {
+      "question": "What is the chemical formula for water?",
+      "answer": "H2O."
+    },
+    {
+      "question": "What is the purpose of the immune system?",
+      "answer": "To protect the body from pathogens."
+    },
+    {
+      "question": "What is the main function of the nervous system?",
+      "answer": "To transmit signals between different parts of the body."
+    },
+    {
+      "question": "What is the function of the kidneys?",
+      "answer": "To filter blood and produce urine."
+    },
+    {
+      "question": "What is the basic structure of a virus?",
+      "answer": "A nucleic acid surrounded by a protein coat."
+    },
+    {
+      "question": "What is the chemical formula for carbon dioxide?",
+      "answer": "CO2."
+    },
+    {
+      "question": "What is the primary function of the lymphatic system?",
+      "answer": "To transport lymph and help rid the body of toxins and waste."
+    },
+    {
+      "question": "What is the main function of the skeletal system?",
+      "answer": "To provide support and structure to the body."
+    },
+    {
+      "question": "What is the role of chlorophyll in photosynthesis?",
+      "answer": "To absorb light energy."
+    },
+    {
+      "question": "What is the basic unit of life?",
+      "answer": "Cell."
+    },
+    {
+      "question": "What is the function of the pancreas?",
+      "answer": "To produce enzymes and hormones like insulin."
+    },
+    {
+      "question": "What is the primary function of the endocrine system?",
+      "answer": "To secrete hormones."
+    },
+    {
+      "question": "What is the chemical symbol for potassium?",
+      "answer": "K."
+    },
+    {
+      "question": "What is the purpose of the reproductive system?",
+      "answer": "To produce offspring."
+    },
+    {
+      "question": "What is the function of platelets?",
+      "answer": "To aid in blood clotting."
+    },
+    {
+      "question": "What is the main function of the urinary system?",
+      "answer": "To eliminate waste from the body."
+    },
+    {
+      "question": "What is the definition of homeostasis?",
+      "answer": "The maintenance of a stable internal environment."
+    },
+    {
+      "question": "What is the chemical symbol for calcium?",
+      "answer": "Ca."
+    },
+    {
+      "question": "What is the primary function of DNA?",
+      "answer": "To store genetic information."
+    },
+    {
+      "question": "What is the main purpose of the integumentary system?",
+      "answer": "To protect the body from external damage."
+    },
+    {
+      "question": "What is the function of the thyroid gland?",
+      "answer": "To regulate metabolism."
+    },
+    {
+      "question": "What is the chemical formula for methane?",
+      "answer": "CH4."
+    },
+    {
+      "question": "What is the primary function of the excretory system?",
+      "answer": "To remove waste from the body."
+    },
+    {
+      "question": "What is the role of ATP in cells?",
+      "answer": "To provide energy for cellular processes."
+    },
+    {
+      "question": "What is the basic unit of a chemical element?",
+      "answer": "Atom."
+    },
+    {
+      "question": "What is the function of the adrenal glands?",
+      "answer": "To produce hormones like adrenaline."
+    },
+    {
+      "question": "What is the main function of the reproductive system?",
+      "answer": "To produce and transport reproductive cells."
+    },
+    {
+      "question": "What is the chemical formula for sodium chloride?",
+      "answer": "NaCl."
+    },
+    {
+      "question": "What is the primary function of neurons?",
+      "answer": "To transmit nerve impulses."
+    },
+    {
+      "question": "What is the definition of a hypothesis?",
+      "answer": "A proposed explanation for a phenomenon based on limited evidence."
+    }
+  ]
 }
+

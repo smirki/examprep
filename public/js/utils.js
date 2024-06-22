@@ -51,3 +51,5 @@ function evaluateAnswer(userAnswer, correctAnswer) {
     const commonWords = userWords.filter(word => correctWords.includes(word));
     return (commonWords.length / correctWords.length) >= 0.5;
 }
+
+
